@@ -1,0 +1,28 @@
+name: mirror-vm-bundle
+on:
+  workflow_dispatch:
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download VM bundle from downloads.claude.ai
+        run: |
+          S=072b6cbfe74f428a98bd86035f83b322b369d1f1
+          BASE=https://downloads.claude.ai/vms/linux/x64/$S
+          mkdir -p out
+          curl -fL --retry 5 -o out/rootfs.vhdx.zst "$BASE/rootfs.vhdx.zst"
+          curl -fL --retry 5 -o out/vmlinuz.zst   "$BASE/vmlinuz.zst"
+          curl -fL --retry 5 -o out/initrd.zst    "$BASE/initrd.zst"
+      - name: Verify checksums
+        run: |
+          cd out
+          echo "c480f8a62d0d9be20e1a1ee31b9f25c73097f793127dcefa90b0c59ada0e12ad  rootfs.vhdx.zst" | sha256sum -c -
+          echo "3118616ef6ba3866652284b8b4c224a96876c56091724c35c93caf1ccb9b50a9  vmlinuz.zst" | sha256sum -c -
+          echo "e3c5ce2b8e9e9adf67de7ec83cafa4a0c65fab8a22036a6b53f03c9765b3342a  initrd.zst" | sha256sum -c -
+      - name: Create release with assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create vm-072b6cbf out/rootfs.vhdx.zst out/vmlinuz.zst out/initrd.zst \
+            --title "claudevm bundle 072b6cbf" \
+            --notes "Personal-use mirror of downloads.claude.ai VM bundle (sha256 verified) for offline preseed."
