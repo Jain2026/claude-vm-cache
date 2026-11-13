@@ -4,6 +4,8 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download VM bundle from downloads.claude.ai
         run: |
