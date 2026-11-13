@@ -25,6 +25,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create vm-072b6cbf out/rootfs.vhdx.zst out/vmlinuz.zst out/initrd.zst \
+          gh release create vm-072b6cbf -R "$GITHUB_REPOSITORY" out/rootfs.vhdx.zst out/vmlinuz.zst out/initrd.zst \
             --title "claudevm bundle 072b6cbf" \
             --notes "Personal-use mirror of downloads.claude.ai VM bundle (sha256 verified) for offline preseed."
